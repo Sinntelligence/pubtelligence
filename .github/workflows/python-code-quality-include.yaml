@@ -25,12 +25,12 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8_ignored="E203,E401,E402"
-        flake8 . --count --ignore=$flake8_ignored --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 . --count --ignore=$flake8_ignored --exit-zero --show-source --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Lint with pylint
       run: |
         pylint_disabled="W0142,W0403,W0613,R0903,R0913,R0914,C0103,F0401,C0330,R0902"
-        pylint --disable=$pylint_disabled --generate-members --max-line-length=120 --enable=unused-import $(git ls-files '*.py')        
+        pylint --disable=$pylint_disabled --max-line-length=120 --enable=unused-import $(git ls-files '*.py')        
 
     - name: Code formatting with black
       run: |

@@ -1,2 +1,2 @@
-# pubtelligence
-Public repor for various Sinntelligence stuff
+# Sinntelligence public Github repo
+Public repo for various Sinntelligence stuff

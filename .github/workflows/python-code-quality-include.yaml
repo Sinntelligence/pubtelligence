@@ -25,7 +25,7 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8_ignored="E203,E401,E402"
-        flake8 . --count --ignore=$flake8_ignored --exit-zero --show-source --max-complexity=10 --max-line-length=127 --statistics
+        flake8 . --count --ignore=$flake8_ignored --exit-zero --show-source --max-complexity=20 --max-line-length=120 --statistics
 
     - name: Lint with pylint
       run: |

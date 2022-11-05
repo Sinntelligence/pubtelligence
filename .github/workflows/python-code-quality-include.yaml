@@ -6,8 +6,9 @@ on:
   workflow_call:
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
+    
     steps:
     - uses: actions/checkout@v3
 
@@ -22,6 +23,15 @@ jobs:
         pip install flake8 pylint pytest black
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+    - name: Run setup shell script
+      run: |
+        if [ -f ci/setup.sh ]; then ci/setup.sh; fi
+
+  codetest:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Lint with flake8
       run: |
         flake8_ignored="E203,E401,E402,W503"

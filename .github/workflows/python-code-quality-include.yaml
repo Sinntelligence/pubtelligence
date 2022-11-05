@@ -25,7 +25,7 @@ jobs:
 
     - name: Run setup shell script
       run: |
-        if [ -f ci/setup.sh ]; then ci/setup.sh; fi
+        if [ -f ci/setup.sh ]; then chmod +x ci/setup.sh; sh ci/setup.sh; fi
 
   codetest:
     needs: setup

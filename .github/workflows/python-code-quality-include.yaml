@@ -12,6 +12,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install sinntelligence repo SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SINNTELLIGENCE_REPO_SSH_KEY }}       
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:

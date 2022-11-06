@@ -4,7 +4,9 @@ name: General Python code quality
 
 on:
   workflow_call:
-
+    secrets:
+      SINNTELLIGENCE_REPO_SSH_KEY:
+        required: true
 jobs:
   codetest:
     runs-on: ubuntu-latest

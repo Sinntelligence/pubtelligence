@@ -25,7 +25,7 @@ jobs:
 
     - name: Run CI setup shell script
       run: |
-        if [ -f ci/setup.sh ]; then chmod +x ci/setup.sh; sh ci/setup.sh; fi
+        if [ -f ./ci/setup.sh ]; then chmod +x ./ci/setup.sh; ./ci/setup.sh; fi
 
     - name: Lint with flake8
       run: |

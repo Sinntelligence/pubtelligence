@@ -42,9 +42,9 @@ jobs:
 
     - name: Lint with pylint
       run: |
-        if [ ! -f .pylintrc ]; then touch .pylintrc; fi
+        if [ ! -f .ci/pylintrc ]; then touch .ci/pylintrc; fi
         pylint_disabled="W0613,R0903,R0913,R0914,C0103,F0401,R0902,C0413,C0411,W0703,R1723,R1734,R1735,R1728,W1514,R0912,W1203,R0801"
-        pylint --rcfile=.pylintrc --disable=$pylint_disabled --max-line-length=120 --enable=unused-import $(git ls-files '*.py')        
+        pylint --rcfile=.ci/pylintrc --disable=$pylint_disabled --max-line-length=120 --enable=unused-import $(git ls-files '*.py')        
 
     - name: Code formatting with black
       run: |

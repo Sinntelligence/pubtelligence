@@ -37,8 +37,10 @@ jobs:
 
     - name: Lint with flake8
       run: |
+        if [ ! -d .ci ]; then mkdir .ci; fi
+        if [ ! -f .ci/flake8 ]; then touch .ci/flake8; fi
         flake8_ignored="E203,E401,E402,W503"
-        flake8 . --count --ignore=$flake8_ignored --show-source --max-complexity=20 --max-line-length=120 --statistics
+        flake8 . --config .ci/flake8 --count --ignore=$flake8_ignored --show-source --max-complexity=20 --max-line-length=120 --statistics
 
     - name: Lint with pylint
       run: |

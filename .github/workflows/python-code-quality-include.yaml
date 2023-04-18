@@ -57,12 +57,6 @@ jobs:
         black --config .ci/black --diff --check --line-length=120 $(git ls-files '*.py')
 
     - name: Test with pytest
-      uses: actions/upload-artifact@v3
-      with:
-        name: pytest.log
-        path: test/pytest.log
-        retention-days: 2
-        if-no-files-found: warn
       run: |
         if [ ! -d test ]; then mkdir test; fi
         sh -c 'python -m pytest test; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret'

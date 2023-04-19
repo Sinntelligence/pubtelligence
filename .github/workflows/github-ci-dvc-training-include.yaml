@@ -8,7 +8,7 @@ on:
     secrets:
       SINNTELLIGENCE_REPO_SSH_KEY:
         required: true
-      DVC_STUDIO_TOKEN:
+      DVC_STUDIO_TOKEN_MFB:
         required: true
       CML_REPO_TOKEN:
         required: true
@@ -62,7 +62,7 @@ jobs:
         env:
           PYTHONPATH: /sinntelligence/src
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STUDIO_TOKEN: ${{ secrets.DVC_STUDIO_TOKEN }}
+          STUDIO_TOKEN: ${{ secrets.DVC_STUDIO_TOKEN_MFB }}
           STUDIO_REPO_URL: git@github.com:${{ github.repository }}.git
         run: |
           # Initialise workspace

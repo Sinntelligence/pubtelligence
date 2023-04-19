@@ -8,11 +8,9 @@ on:
     secrets:
       SINNTELLIGENCE_REPO_SSH_KEY:
         required: true
-      REPO_TOKEN:
+      DVC_STUDIO_TOKEN:
         required: true
-      STUDIO_TOKEN:
-        required: true
-      STUDIO_REPO_URL:
+      GITHUB_TOKEN:
         required: true
 
 permissions:

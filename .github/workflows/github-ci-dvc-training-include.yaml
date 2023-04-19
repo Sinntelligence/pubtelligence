@@ -75,15 +75,15 @@ jobs:
           dvc pull --remote aime
           cml ci --fetch-depth 0
 
-          # Get training parameters
-          FRAMEWORK_NAME=$(grep "framework:" params.yaml | cut -d'"' -f 2)
-          DATASETS_NAME=$(grep "datasets:" params.yaml | cut -d'"' -f 2)
-          IMAGE_SIZE=$(grep "image_size:" params.yaml | cut -d' ' -f 4)
-
           # Run DVC experiment
           dvc repro --force
           dvc push --remote aime
           cml pr --squash --skip-ci .
+
+          # Get training parameters
+          FRAMEWORK_NAME=$(grep "framework:" params.yaml | cut -d'"' -f 2)
+          DATASETS_NAME=$(grep "datasets:" params.yaml | cut -d'"' -f 2)
+          IMAGE_SIZE=$(grep "image_size:" params.yaml | cut -d' ' -f 4)
 
           # Create initial Github report via DVC
           if [ -f dvclive/report.md ]; then

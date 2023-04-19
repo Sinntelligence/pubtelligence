@@ -36,7 +36,7 @@ jobs:
           apt -y install --upgrade openssh-client fontconfig
           conda install -c anaconda git
           git -C /usr/src/ultralytics pull
-          pip install matplotlib dvc
+          pip install --upgrade numpy matplotlib dvc
           
       - uses: webfactory/ssh-agent@v0.7.0
         with:

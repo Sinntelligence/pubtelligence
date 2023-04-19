@@ -80,6 +80,7 @@ jobs:
           IMAGE_SIZE=$(grep "image_size:" params.yaml | cut -d' ' -f 4)
 
           # Run DVC experiment
+          echo ">> Training with DVC Studio token: $REPO_TOKEN"
           dvc repro --force
           dvc push --remote aime
           cml pr --squash --skip-ci .

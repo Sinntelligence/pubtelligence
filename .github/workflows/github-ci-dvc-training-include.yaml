@@ -62,7 +62,7 @@ jobs:
         env:
           PYTHONPATH: /sinntelligence/src
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STUDIO_TOKEN: ${{ secrets.DVC_STUDIO_TOKEN_MFB }}
+          STUDIO_TOKEN: ${{ secrets.DVC_STUDIO_TOKEN }}
           STUDIO_REPO_URL: git@github.com:${{ github.repository }}.git
         run: |
           # Initialise workspace

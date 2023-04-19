@@ -1,0 +1,132 @@
+# Train the YOLO model via DVC and CML using our self-hosted Github runner.
+# https://github.com/iterative/example-get-started-experiments/blob/main/.github/workflows/run-studio-experiment.yml
+
+name: Run DVC Experiment
+
+on:
+  workflow_call:
+    secrets:
+      SINNTELLIGENCE_REPO_SSH_KEY:
+        required: true
+      REPO_TOKEN:
+        required: true
+      STUDIO_TOKEN:
+        required: true
+      STUDIO_REPO_URL:
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+
+jobs:
+  train-and-report:
+    if: "contains(github.event.head_commit.message, '[TRAIN]')"
+    timeout-minutes: 10080  # 1 week
+    runs-on: [self-hosted, gpu, cml]      
+    container:
+      image: docker://ultralytics/ultralytics:latest
+      volumes:
+        - /data/dvc/data:/dvcdata
+      options: --gpus all --ipc host
+      
+    steps:
+      - name: Setup Docker Container
+        run: |
+          apt update
+          apt -y install --upgrade openssh-client fontconfig
+          conda install -c anaconda git
+          git -C /usr/src/ultralytics pull
+          pip install matplotlib dvc
+          
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SINNTELLIGENCE_REPO_SSH_KEY }}
+          
+      - name: Setup Sinntelligence Python Module
+        run: |
+          git clone --single-branch https://github.com/Sinntelligence/sinntelligence /sinntelligence
+          
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          
+      - uses: iterative/setup-cml@v1
+        env:
+          CML_TOKEN: ${{ secrets.CML_REPO_TOKEN }}
+          
+      - name: Train YOLO model
+        env:
+          PYTHONPATH: /sinntelligence/src
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STUDIO_TOKEN: ${{ secrets.DVC_STUDIO_TOKEN_MFB }}
+          STUDIO_REPO_URL: git@github.com:${{ github.repository }}.git
+        run: |
+          # Initialise workspace
+          pip install -r src/dvc/requirements.txt
+          npm install -g csv2md
+
+          # Setup DVC and CML
+          dvc remote add -d -f aime /dvcdata
+          dvc config cache.type copy
+          dvc pull --remote aime
+          cml ci --fetch-depth 0
+
+          # Get training parameters
+          FRAMEWORK_NAME=$(grep "framework:" params.yaml | cut -d'"' -f 2)
+          DATASETS_NAME=$(grep "datasets:" params.yaml | cut -d'"' -f 2)
+          IMAGE_SIZE=$(grep "image_size:" params.yaml | cut -d' ' -f 4)
+
+          # Run DVC experiment
+          dvc repro --force
+          dvc push --remote aime
+          cml pr --squash --skip-ci .
+
+          # Create initial Github report via DVC
+          if [ -f dvclive/report.md ]; then
+            grep -v ".png" dvclive/report.md >> report.md;
+            echo "---" >> report.md
+          else
+            echo "# DVC Report"
+            echo "### Training Parameter" >> report.md
+            echo "\`\`\`yaml" >> report.md
+            cat params.yaml >> report.md
+            echo "\`\`\`" >> report.md
+          fi
+          echo "**![Best model download page](https://github.com/${{github.repository }}/actions/runs/${{ github.run_id }})**" >> report.md
+          echo "---" >> report.md
+
+          # Create plots in report
+          if [ -d dvclive/plots/metrics ]; then
+            num_files=$(find dvclive/plots/metrics -maxdepth 1 -type f | wc -l)
+            if [ $num_files -ge 4 ]; then
+              echo "### Performance Charts" >> report.md
+              dvc plots show --show-vega mAP > vega.json
+              vl2png vega.json -s 1.5 > plot1.png
+              echo '![](./plot1.png "Model Performance")' >> report.md
+              dvc plots show --show-vega PR > vega.json
+              vl2png vega.json -s 1.5 > plot2.png
+              echo '![](./plot2.png "Precision vs. Recall")' >> report.md
+            fi
+          fi
+
+          # Add YOLO training plots
+          echo "### YOLO Results" >> report.md
+          for file in "training/$DATASETS_NAME"/*.png "training/$DATASETS_NAME"/*.jpg; do cp "$file" .; echo "#### $file" >> report.md; echo "![](./$file \"YOLO\")" >> report.md; done
+
+          # Create epoch details table
+          echo "### Training Epochs" >> report.md
+          csv2md -p < training/$DATASETS_NAME/results.csv >> report.md
+
+          # Commit report to Github via CML
+          cml comment create report.md
+          echo "artifactPath=models/$DATASETS_NAME/$FRAMEWORK_NAME-$DATASETS_NAME-$IMAGE_SIZE.pt" >> $GITHUB_ENV
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: best-yolo-model
+          path: ${{ env.artifactPath }}
+          retention-days: 7

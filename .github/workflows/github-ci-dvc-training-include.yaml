@@ -76,7 +76,7 @@ jobs:
           cml ci --fetch-depth 0
 
           # Run DVC experiment
-          dvc repro --force
+          dvc exp run --force
           dvc push --remote aime
           cml pr --squash --skip-ci .
 

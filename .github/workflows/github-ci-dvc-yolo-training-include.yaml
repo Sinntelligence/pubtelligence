@@ -77,7 +77,7 @@ jobs:
           # Run DVC experiment
           dvc exp run --force
           dvc push --remote aime
-          cml pr --user-name=haimat --squash --skip-ci .
+          cml pr --squash --skip-ci .
 
           # Get training parameters
           FRAMEWORK_NAME=$(grep "framework:" params.yaml | cut -d'"' -f 2)

@@ -63,7 +63,7 @@ jobs:
           STUDIO_TOKEN: ${{ secrets.DVC_STUDIO_TOKEN_MFB }}
           STUDIO_REPO_URL: git@github.com:${{ github.repository }}.git
           DVCLIVE_LOGLEVEL: DEBUG
-          MKL_SERVICE_FORCE_INTEL: 1
+          #MKL_SERVICE_FORCE_INTEL: 1
         run: |
           # Initialise workspace
           pip install -r src/dvc/requirements.txt

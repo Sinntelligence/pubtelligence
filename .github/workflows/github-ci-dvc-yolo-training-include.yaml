@@ -59,7 +59,7 @@ jobs:
       - name: Train YOLO model
         env:
           PYTHONPATH: /sinntelligence/src
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_TOKEN: ${{ secrets.CML_REPO_TOKEN }}
           STUDIO_TOKEN: ${{ secrets.DVC_STUDIO_TOKEN_MFB }}
           STUDIO_REPO_URL: git@github.com:${{ github.repository }}.git
           DVCLIVE_LOGLEVEL: INFO  # or: DEBUG

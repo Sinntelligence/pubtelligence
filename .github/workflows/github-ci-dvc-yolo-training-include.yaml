@@ -60,10 +60,14 @@ jobs:
         env:
           PYTHONPATH: /sinntelligence/src
           REPO_TOKEN: ${{ secrets.CML_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CML_REPO_TOKEN }}
           STUDIO_TOKEN: ${{ secrets.DVC_STUDIO_TOKEN_MFB }}
           STUDIO_REPO_URL: git@github.com:${{ github.repository }}.git
           DVCLIVE_LOGLEVEL: INFO  # or: DEBUG
         run: |
+          # TEMP FOR TESTING
+          sleep 24h
+        
           # Initialise workspace
           pip install -r src/dvc/requirements.txt
           npm install -g csv2md
@@ -125,6 +129,8 @@ jobs:
           echo "artifactPath=models/$DATASETS_NAME/$FRAMEWORK_NAME-$DATASETS_NAME-$IMAGE_SIZE.pt" >> $GITHUB_ENV
       
       - uses: actions/upload-artifact@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.CML_REPO_TOKEN }}      
         with:
           name: best-yolo-model
           path: ${{ env.artifactPath }}

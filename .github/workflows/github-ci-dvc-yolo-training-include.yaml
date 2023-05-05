@@ -65,9 +65,6 @@ jobs:
           STUDIO_REPO_URL: git@github.com:${{ github.repository }}.git
           DVCLIVE_LOGLEVEL: INFO  # or: DEBUG
         run: |
-          # TEMP FOR TESTING
-          sleep 24h
-        
           # Initialise workspace
           pip install -r src/dvc/requirements.txt
           npm install -g csv2md

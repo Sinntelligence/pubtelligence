@@ -7,7 +7,12 @@ on:
     secrets:
       SINNTELLIGENCE_REPO_SSH_KEY:
         required: true
-        
+
+env:
+  TISCAMERA_DL_LINK_LATEST: https://github.com/TheImagingSource/tiscamera/releases/download/v-tiscamera-1.1.1/tiscamera_1.1.1.4142_amd64_ubuntu_1804.deb
+  TISCAMERA_DL_LINK_V1.1.1: https://github.com/TheImagingSource/tiscamera/releases/download/v-tiscamera-1.1.1/tiscamera_1.1.1.4142_amd64_ubuntu_1804.deb
+  TISCAMERA_DL_LINK_V1.0.0: https://github.com/TheImagingSource/tiscamera/releases/download/v-tiscamera-1.0.0/tiscamera_1.0.0.4005_amd64_ubuntu_1804.deb
+  
 jobs:
   codetest:
     runs-on: ubuntu-latest

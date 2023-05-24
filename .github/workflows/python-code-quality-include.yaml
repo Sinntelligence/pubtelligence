@@ -4,9 +4,6 @@ name: General Python code quality
 
 on:
   workflow_call:
-    secrets:
-      SINNTELLIGENCE_REPO_SSH_KEY:
-        required: true
 
 env:
   TISCAMERA_DL_LINK_LATEST: https://github.com/TheImagingSource/tiscamera/releases/download/v-tiscamera-1.1.1/tiscamera_1.1.1.4142_amd64_ubuntu_1804.deb

@@ -20,11 +20,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3   
 
-    - name: Install sinntelligence repo SSH key
-      uses: webfactory/ssh-agent@v0.7.0
-      with:
-        ssh-private-key: ${{ secrets.SINNTELLIGENCE_REPO_SSH_KEY }}
-
     - name: Set up Python 3.10
       uses: actions/setup-python@v4
       with:

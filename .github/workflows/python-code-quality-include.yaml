@@ -31,18 +31,10 @@ jobs:
         python-version: "3.10"
 
     - name: Update python
-      run: sudo apt update
-
-    - name: Install dependencies
       run: |
+        sudo apt update
         python -m pip install --upgrade pip
-        pip install flake8 pylint pytest black
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    - name: Run CI setup shell script
-      run: |
-        if [ ! -d .ci ]; then mkdir .ci; fi
-        if [ -f .ci/setup.sh ]; then chmod +x .ci/setup.sh; .ci/setup.sh; fi
+        python -m pip install flake8 pylint pytest black
 
     - name: Lint with flake8
       run: |
@@ -60,6 +52,16 @@ jobs:
       run: |
         if [ ! -f .ci/black ]; then touch .ci/black; fi
         black --config .ci/black --diff --check --line-length=120 $(git ls-files '*.py')
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Run CI setup shell script
+      run: |
+        if [ ! -d .ci ]; then mkdir .ci; fi
+        if [ -f .ci/setup.sh ]; then chmod +x .ci/setup.sh; .ci/setup.sh; fi
 
     - name: Test with pytest
       run: |

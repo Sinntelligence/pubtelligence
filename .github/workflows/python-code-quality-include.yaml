@@ -56,9 +56,15 @@ jobs:
         if [ ! -d .ci ]; then mkdir .ci; fi
         if [ -f .ci/setup.sh ]; then chmod +x .ci/setup.sh; .ci/setup.sh; fi
 
+    - name: Create a non-root user
+      run: |
+        sudo useradd -m ci_user
+        sudo chown -R ci_user:ci_user .
+        sudo chmod -R 777 .
+
     - name: Test with pytest
       env:
         SINNTELLIGENCE_MP_CONTEXT: "forkserver"
       run: |
         if [ ! -d test ]; then mkdir test; fi
-        sh -c 'python -m pytest test; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret'
+        sudo runuser -l ci_user -c 'python -m pytest test; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret'

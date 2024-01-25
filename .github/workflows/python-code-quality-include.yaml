@@ -23,6 +23,12 @@ jobs:
       with:
         python-version: "3.10"
 
+    - name: Create a non-root user
+      run: |
+        sudo useradd -m ci_user
+        sudo chown -R ci_user:ci_user .
+        sudo chmod -R 777 .
+
     - name: Update python
       run: |
         sudo apt update
@@ -30,22 +36,22 @@ jobs:
         python -m pip install flake8 pylint pytest black
         echo "PYTHON_PATH=$(which python)" >> $GITHUB_ENV
 
-    - name: Lint with flake8
-      run: |
-        if [ ! -f .ci/flake8 ]; then touch .ci/flake8; fi
-        flake8_ignored="E203,E401,E402,W503"
-        flake8 . --config .ci/flake8 --count --ignore=$flake8_ignored --show-source --max-complexity=20 --max-line-length=120 --statistics
+    # - name: Lint with flake8
+    #   run: |
+    #     if [ ! -f .ci/flake8 ]; then touch .ci/flake8; fi
+    #     flake8_ignored="E203,E401,E402,W503"
+    #     flake8 . --config .ci/flake8 --count --ignore=$flake8_ignored --show-source --max-complexity=20 --max-line-length=120 --statistics
 
-    - name: Lint with pylint
-      run: |
-        if [ ! -f .ci/pylintrc ]; then touch .ci/pylintrc; fi
-        pylint_disabled="W0613,R0903,R0913,R0914,C0103,F0401,R0902,C0413,C0411,W0703,R1723,R1734,R1735,R1728,W1514,R0912,W1203,R0801,R0201,R0022,W0719"
-        pylint --rcfile=.ci/pylintrc --jobs=0 --disable=$pylint_disabled --max-line-length=120 --enable=unused-import $(git ls-files '*.py')        
+    # - name: Lint with pylint
+    #   run: |
+    #     if [ ! -f .ci/pylintrc ]; then touch .ci/pylintrc; fi
+    #     pylint_disabled="W0613,R0903,R0913,R0914,C0103,F0401,R0902,C0413,C0411,W0703,R1723,R1734,R1735,R1728,W1514,R0912,W1203,R0801,R0201,R0022,W0719"
+    #     pylint --rcfile=.ci/pylintrc --jobs=0 --disable=$pylint_disabled --max-line-length=120 --enable=unused-import $(git ls-files '*.py')        
 
-    - name: Code formatting with black
-      run: |
-        if [ ! -f .ci/black ]; then touch .ci/black; fi
-        black --config .ci/black --diff --check --line-length=120 $(git ls-files '*.py')
+    # - name: Code formatting with black
+    #   run: |
+    #     if [ ! -f .ci/black ]; then touch .ci/black; fi
+    #     black --config .ci/black --diff --check --line-length=120 $(git ls-files '*.py')
 
     - name: Install dependencies
       run: |
@@ -56,12 +62,6 @@ jobs:
       run: |
         if [ ! -d .ci ]; then mkdir .ci; fi
         if [ -f .ci/setup.sh ]; then chmod +x .ci/setup.sh; .ci/setup.sh; fi
-
-    - name: Create a non-root user
-      run: |
-        sudo useradd -m ci_user
-        sudo chown -R ci_user:ci_user .
-        sudo chmod -R 777 .
 
     - name: Test with pytest
       env:

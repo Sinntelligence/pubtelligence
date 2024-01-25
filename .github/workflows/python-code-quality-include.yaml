@@ -68,4 +68,4 @@ jobs:
         SINNTELLIGENCE_MP_CONTEXT: "forkserver"
       run: |
         if [ ! -d test ]; then mkdir test; fi
-        sudo runuser -l ci_user -c 'export PATH=$PYTHON_PATH:$PATH && python -m pytest test/unit -k anvil; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret'
+        sh -c 'python -m pytest test; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret'

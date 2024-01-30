@@ -17,6 +17,15 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3   
+      with:
+        submodules: false
+
+    - name: Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.ANVIL_REPOS_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
 
     - name: Set up Python 3.10
       uses: actions/setup-python@v4
@@ -45,6 +54,20 @@ jobs:
       run: |
         if [ ! -f .ci/black ]; then touch .ci/black; fi
         black --config .ci/black --diff --check --line-length=120 $(git ls-files '*.py')
+
+    # Unfortunately github actions cannot checkout private submodule out-of-the-box. 
+    # The workaround is to manually clone each submodule into its correct folder. 
+    # We do that by parsing the .gitmodules file for URLs and Folders and using the SSH key stored in ~/.ssh/id_rsa for authentication.
+    - name: clone submodules
+      run: |
+        if [ -f .gitmodules ]; then
+          URLS=$(git config --file .gitmodules --get-regexp 'submodule\..*\.url' | awk '{ print $2 }' | tr -d '\n' | sed 's/https:\/\/github.com\//git@github.com:/')
+          PATHS=$(git config --file .gitmodules --get-regexp 'submodule\..*\.path' | awk '{ print $2 }' | tr -d '\n')
+          for i in "${!URLS[@]}"; do
+            echo Cloning submodule from ${URLS[$i]} into "${PATHS[$i]}"
+            GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa' git clone "${URLS[$i]}" "${PATHS[$i]}"
+          done
+        fi
 
     - name: Install dependencies
       run: |

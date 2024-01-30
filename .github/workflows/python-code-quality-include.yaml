@@ -17,6 +17,15 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3   
+      with:
+        submodules: false
+
+    - name: Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.ANVIL_REPOS_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
 
     - name: Set up Python 3.10
       uses: actions/setup-python@v4
@@ -29,6 +38,19 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pylint pytest black
         ls src/skicheck/anvil_head_skicheck
+    
+    - name: clone submodule
+      run: |
+        URLS=$(git config --file .gitmodules --get-regexp 'submodule\..*\.url' | awk '{ print $2 }' | tr -d '\n' | sed 's/https:\/\/github.com\//git@github.com:/')
+        PATHS=$(git config --file .gitmodules --get-regexp 'submodule\..*\.path' | awk '{ print $2 }' | tr -d '\n')
+        echo $URLS
+        for i in "${!URLS[@]}"; do
+          echo "cloning.."
+          echo "URL=${URLS[$i]}"
+          echo "PATH=${PATHS[$i]}"
+          GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa' git clone "${URLS[$i]}" "${PATHS[$i]}"
+          ls "${PATHS[$i]}"
+        done
 
     # - name: Lint with flake8
     #   run: |

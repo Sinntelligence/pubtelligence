@@ -1,88 +1,18 @@
 # Default Sinntelligence Python code quality workflow for our Github repos.
 
-name: General Python code quality
+name: General Python code quality - DEPRECATED
 
 on:
   workflow_call:
-
-env:
-  TISCAMERA_DL_LINK_LATEST: https://github.com/TheImagingSource/tiscamera/releases/download/v-tiscamera-1.1.1/tiscamera_1.1.1.4142_amd64_ubuntu_1804.deb
-  TISCAMERA_DL_LINK_V1.1.1: https://github.com/TheImagingSource/tiscamera/releases/download/v-tiscamera-1.1.1/tiscamera_1.1.1.4142_amd64_ubuntu_1804.deb
-  TISCAMERA_DL_LINK_V1.0.0: https://github.com/TheImagingSource/tiscamera/releases/download/v-tiscamera-1.0.0/tiscamera_1.0.0.4005_amd64_ubuntu_1804.deb
   
 jobs:
   codetest:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 5
     
     steps:
-    - uses: actions/checkout@v3   
-      with:
-        submodules: false
-
-    - name: Setup SSH Key
+    - name: Display deprecation message
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.ANVIL_REPOS_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
-
-    - name: Update python
-      run: |
-        sudo apt update
-        python -m pip install --upgrade pip
-        python -m pip install flake8 pylint pytest black
-
-    - name: Lint with flake8
-      run: |
-        if [ ! -f .ci/flake8 ]; then touch .ci/flake8; fi
-        flake8_ignored="E203,E401,E402,W503"
-        flake8 . --config .ci/flake8 --count --ignore=$flake8_ignored --show-source --max-complexity=20 --max-line-length=120 --statistics
-
-    - name: Lint with pylint
-      run: |
-        if [ ! -f .ci/pylintrc ]; then touch .ci/pylintrc; fi
-        pylint_disabled="W0613,R0903,R0913,R0914,C0103,F0401,R0902,C0413,C0411,W0703,R1723,R1734,R1735,R1728,W1514,R0912,W1203,R0801,R0201,R0022,W0719"
-        pylint --rcfile=.ci/pylintrc --jobs=0 --disable=$pylint_disabled --max-line-length=120 --enable=unused-import $(git ls-files '*.py')        
-
-    - name: Code formatting with black
-      run: |
-        if [ ! -f .ci/black ]; then touch .ci/black; fi
-        black --config .ci/black --diff --check --line-length=120 $(git ls-files '*.py')
-
-    # Unfortunately github actions cannot checkout private submodule out-of-the-box. 
-    # The workaround is to manually clone each submodule into its correct folder. 
-    # We do that by parsing the .gitmodules file for URLs and Folders and using the SSH key stored in ~/.ssh/id_rsa for authentication.
-    - name: clone submodules
-      run: |
-        if [ -f .gitmodules ]; then
-          URLS=$(git config --file .gitmodules --get-regexp 'submodule\..*\.url' | awk '{ print $2 }' | tr -d '\n' | sed 's/https:\/\/github.com\//git@github.com:/')
-          PATHS=$(git config --file .gitmodules --get-regexp 'submodule\..*\.path' | awk '{ print $2 }' | tr -d '\n')
-          for i in "${!URLS[@]}"; do
-            echo Cloning submodule from ${URLS[$i]} into "${PATHS[$i]}"
-            GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa' git clone "${URLS[$i]}" "${PATHS[$i]}"
-          done
-        fi
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    - name: Run CI setup shell script
-      run: |
-        if [ ! -d .ci ]; then mkdir .ci; fi
-        if [ -f .ci/setup.sh ]; then chmod +x .ci/setup.sh; .ci/setup.sh; fi
-
-    - name: Test with pytest
-      env:
-        SINNTELLIGENCE_MP_CONTEXT: "forkserver"
-        GENICAM_GENTL64_PATH: "/usr/lib/ids/cti"  # for IDS peak library
-      run: |
-        if [ ! -d test ]; then mkdir test; fi
-        sh -c 'python -m pytest test; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret'
+        echo "WARNING: This workflow is deprecated and no longer maintained."
+        echo "Please update your references to use the new workflow location in the private sinntelligence repository."
+        exit 1

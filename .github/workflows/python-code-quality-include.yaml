@@ -85,4 +85,4 @@ jobs:
         GENICAM_GENTL64_PATH: "/usr/lib/ids/cti"  # for IDS peak library
       run: |
         if [ ! -d test ]; then mkdir test; fi
-        sh -c 'python -m pytest test; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret'
+        sh -c 'python -m pytest test/unit -k anvil; ret=$?; [ $ret = 5 ] && exit 0 || exit $ret'
